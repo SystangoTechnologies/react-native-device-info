@@ -1,35 +1,52 @@
 package com.learnium.RNDeviceInfo;
-
-import android.app.KeyguardManager;
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Point;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings.Secure;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
 
-import com.google.android.gms.iid.InstanceID;
-
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
+import com.imagepicker.RNPermissionManager;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
 public class RNDeviceModule extends ReactContextBaseJavaModule {
 
   ReactApplicationContext reactContext;
+    Activity activity;
 
-  public RNDeviceModule(ReactApplicationContext reactContext) {
+  public RNDeviceModule(ReactApplicationContext reactContext, Activity mActivity) {
     super(reactContext);
     this.reactContext = reactContext;
+      this.activity = mActivity;
   }
 
   @Override
@@ -57,30 +74,9 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
     return current.getCountry();
   }
 
-  private Boolean isEmulator() {
-    return Build.FINGERPRINT.startsWith("generic")
-      || Build.FINGERPRINT.startsWith("unknown")
-      || Build.MODEL.contains("google_sdk")
-      || Build.MODEL.contains("Emulator")
-      || Build.MODEL.contains("Android SDK built for x86")
-      || Build.MANUFACTURER.contains("Genymotion")
-      || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-      || "google_sdk".equals(Build.PRODUCT);
-  }
-
-  private Boolean isTablet() {
-    int layout = getReactApplicationContext().getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-    return layout == Configuration.SCREENLAYOUT_SIZE_LARGE || layout == Configuration.SCREENLAYOUT_SIZE_XLARGE;
-  }
-
-  @ReactMethod
-  public void isPinOrFingerprintSet(Callback callback) {
-    KeyguardManager keyguardManager = (KeyguardManager) this.reactContext.getSystemService(Context.KEYGUARD_SERVICE); //api 16+
-    callback.invoke(keyguardManager.isKeyguardSecure());
-  }
-
   @Override
   public @Nullable Map<String, Object> getConstants() {
+
     HashMap<String, Object> constants = new HashMap<String, Object>();
 
     PackageManager packageManager = this.reactContext.getPackageManager();
@@ -102,19 +98,15 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
 
     try {
       BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
-      if(myDevice!=null){
-        deviceName = myDevice.getName();
-      }
+      deviceName = myDevice.getName();
     } catch(Exception e) {
       e.printStackTrace();
     }
 
-    constants.put("instanceId", InstanceID.getInstance(this.reactContext).getId());
     constants.put("deviceName", deviceName);
     constants.put("systemName", "Android");
     constants.put("systemVersion", Build.VERSION.RELEASE);
     constants.put("model", Build.MODEL);
-    constants.put("brand", Build.BRAND);
     constants.put("deviceId", Build.BOARD);
     constants.put("deviceLocale", this.getCurrentLanguage());
     constants.put("deviceCountry", this.getCurrentCountry());
@@ -122,9 +114,68 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
     constants.put("systemManufacturer", Build.MANUFACTURER);
     constants.put("bundleId", packageName);
     constants.put("userAgent", System.getProperty("http.agent"));
-    constants.put("timezone", TimeZone.getDefault().getID());
-    constants.put("isEmulator", this.isEmulator());
-    constants.put("isTablet", this.isTablet());
     return constants;
   }
+
+  @ReactMethod
+  public void  getCurrentScreenSize(final Callback callback){
+
+    DisplayMetrics metrics = reactContext.getResources().getDisplayMetrics();;
+    WindowManager wm = (WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE);
+    Display display = wm.getDefaultDisplay();
+    Point size = new Point();
+    display.getSize(size);
+    int width = (int)(size.x/metrics.density);
+    int height = (int)(size.y/metrics.density);
+    callback.invoke(null, String.valueOf(width), String.valueOf(height));
+  }
+   @ReactMethod
+    public void takeScreenShot(final Callback callback){
+       if (!RNPermissionManager.isAlertWindowPermissionGranted(activity)) {
+           ActivityCompat.requestPermissions(activity,
+                   new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                   225);
+           callback.invoke(null,null);
+
+       }
+       else{
+           View view = activity.getWindow().getDecorView();
+           view.setDrawingCacheEnabled(true);
+           view.buildDrawingCache();
+           Bitmap b1 = view.getDrawingCache();
+           Rect frame = new Rect();
+           activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+           int statusBarHeight = frame.top;
+           int width = activity.getWindowManager().getDefaultDisplay().getWidth();
+           int height = activity.getWindowManager().getDefaultDisplay().getHeight();
+
+           Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height - statusBarHeight);
+           view.destroyDrawingCache();
+
+           String imagePath=saveToSDcard(b);
+           Log.e("imagePath",imagePath);
+
+           callback.invoke(null,imagePath);
+       }
+   }
+
+    private String saveToSDcard(Bitmap pictureBitmap) {
+        String filepath="";
+        try {
+            String path = Environment.getExternalStorageDirectory().toString();
+            OutputStream fOut = null;
+            Integer counter = 0;
+            File file = new File(path, "ScreenaShot" + counter + ".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+            fOut = new FileOutputStream(file);
+            pictureBitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut); // saving the Bitmap to a file compressed as a JPEG with 85% compression rate
+            fOut.flush(); // Not really required
+            fOut.close(); // do not forget to close the stream
+            MediaStore.Images.Media.insertImage(activity.getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
+             filepath= file.getPath();
+
+        } catch (Exception e) {
+           Log.e("Log",e.getStackTrace().toString());
+        }
+        return filepath;
+    }
 }

@@ -8,9 +8,6 @@ module.exports = {
   getUniqueID: function () {
     return RNDeviceInfo.uniqueId;
   },
-  getInstanceID: function() {
-    return RNDeviceInfo.instanceId;
-  },
   getDeviceId: function () {
     return RNDeviceInfo.deviceId;
   },
@@ -19,9 +16,6 @@ module.exports = {
   },
   getModel: function () {
     return RNDeviceInfo.model;
-  },
-  getBrand: function () {
-    return RNDeviceInfo.brand;
   },
   getSystemName: function () {
     return RNDeviceInfo.systemName;
@@ -53,16 +47,14 @@ module.exports = {
   getDeviceCountry: function() {
     return RNDeviceInfo.deviceCountry;
   },
-  getTimezone: function() {
-    return RNDeviceInfo.timezone;
+  takeScreenShot(cb) {
+    return RNDeviceInfo.takeScreenShot((error,imagePath) =>{
+       cb(error,imagePath);
+    });
   },
-  isEmulator: function() {
-    return RNDeviceInfo.isEmulator;
-  },
-  isTablet: function() {
-    return RNDeviceInfo.isTablet;
-  },
-  isPinOrFingerprintSet: function () {
-    return RNDeviceInfo.isPinOrFingerprintSet;
+  getCurrentScreenSize(cb) {
+    return RNDeviceInfo.getCurrentScreenSize((error,width, height) =>{
+      cb(error, width, height);
+    });
   },
 };

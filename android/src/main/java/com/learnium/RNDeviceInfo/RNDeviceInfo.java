@@ -1,5 +1,7 @@
 package com.learnium.RNDeviceInfo;
 
+import android.app.Activity;
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,18 +14,23 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.bridge.JavaScriptModule;
 
 public class RNDeviceInfo implements ReactPackage {
+  private Activity mActivity = null;
 
+  public RNDeviceInfo(Activity activity) {
+    
+    mActivity = mActivity;
+  }
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new RNDeviceModule(reactContext));
+    modules.add(new RNDeviceModule(reactContext,mActivity));
 
     return modules;
   }
 
-  // Deprecated RN 0.47
+  @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {
   	return Collections.emptyList();
   }
