@@ -11,9 +11,30 @@
         "type": "range"
       },
       "/Users/nidhir/Documents/Projects/Strat-o-matic/mobile-card-viewer"
+    ],
+    [
+      {
+        "raw": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+        "spec": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:SystangoTechnologies/react-native-device-info.git",
+          "sshUrl": "git+ssh://git@github.com/SystangoTechnologies/react-native-device-info.git",
+          "httpsUrl": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+          "gitUrl": "git://github.com/SystangoTechnologies/react-native-device-info.git",
+          "shortcut": "github:SystangoTechnologies/react-native-device-info",
+          "directUrl": "https://raw.githubusercontent.com/SystangoTechnologies/react-native-device-info/master/package.json"
+        }
+      },
+      "/Users/stplmacmini19/Projects/BatterVsPitcher 3"
     ]
   ],
-  "_from": "react-native-device-info@>=0.9.3 <0.10.0",
+  "_from": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
   "_id": "react-native-device-info@0.9.7",
   "_inCache": true,
   "_location": "/react-native-device-info",
@@ -29,22 +50,33 @@
   "_npmVersion": "3.10.3",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "react-native-device-info@^0.9.3",
+    "raw": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
     "scope": null,
-    "escapedName": "react-native-device-info",
-    "name": "react-native-device-info",
-    "rawSpec": "^0.9.3",
-    "spec": ">=0.9.3 <0.10.0",
-    "type": "range"
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+    "spec": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:SystangoTechnologies/react-native-device-info.git",
+      "sshUrl": "git+ssh://git@github.com/SystangoTechnologies/react-native-device-info.git",
+      "httpsUrl": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+      "gitUrl": "git://github.com/SystangoTechnologies/react-native-device-info.git",
+      "shortcut": "github:SystangoTechnologies/react-native-device-info",
+      "directUrl": "https://raw.githubusercontent.com/SystangoTechnologies/react-native-device-info/master/package.json"
+    }
   },
   "_requiredBy": [
-    "/"
+    "#USER",
+    "/",
+    "/rn-crash-reporter"
   ],
-  "_resolved": "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-0.9.7.tgz",
-  "_shasum": "e4b35d60bbf73472beb30de3d2b96de15a51b75d",
+  "_resolved": "git+https://github.com/SystangoTechnologies/react-native-device-info.git#17f14398d79ad5d7de66d3c8e4a0454343502584",
+  "_shasum": "116fac687cae67eabad30923f3d8076b51489210",
   "_shrinkwrap": null,
-  "_spec": "react-native-device-info@^0.9.3",
-  "_where": "/Users/nidhir/Documents/Projects/Strat-o-matic/mobile-card-viewer",
+  "_spec": "git+https://github.com/SystangoTechnologies/react-native-device-info.git",
+  "_where": "/Users/stplmacmini19/Projects/BatterVsPitcher 3",
   "author": {
     "name": "Rebecca Hughes",
     "email": "rebecca@learnium.net",
